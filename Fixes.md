@@ -109,3 +109,12 @@
 - Rewired `src/pages/AgentBuilderPage.tsx` to consume store selectors/actions and removed obsolete local-state hooks.
 - Why: enforces a single source of truth, reduces prop/state orchestration complexity, and aligns with professional state-management practices.
 - Files: src/pages/AgentBuilderPage.tsx, src/store/agentBuilderStore.ts, src/store/index.ts, src/hooks/useAgentData.ts, src/hooks/useSessionTime.ts, package.json, bun.lock
+
+### 17) Addressed post-migration anti-patterns and resilience gaps
+
+- Hardened persisted store hydration by validating localStorage payload shape before normalizing saved agents.
+- Moved fetch request sequencing token to store-local closure scope instead of module-level mutable state.
+- Reduced timer-driven container rerenders by moving session display to `src/components/SessionStatus.tsx` and ticker side effect to `src/hooks/useSessionTicker.ts`.
+- Updated analytics heartbeat to keep a stable interval and read the latest agent name via ref.
+- Why: improves runtime safety, reduces unnecessary rerenders, and removes subtle lifecycle anti-patterns.
+- Files: src/store/agentBuilderStore.ts, src/pages/AgentBuilderPage.tsx, src/hooks/useAnalyticsHeartbeat.ts, src/hooks/useSessionTicker.ts, src/components/SessionStatus.tsx, src/components/index.ts

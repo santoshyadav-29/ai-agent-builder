@@ -4,23 +4,19 @@ import {
   ConfigurationOptions,
   CurrentAgentConfiguration,
   SavedAgentsPanel,
+  SessionStatus,
 } from "../components";
 import { useAnalyticsHeartbeat } from "../hooks/useAnalyticsHeartbeat";
+import { useSessionTicker } from "../hooks/useSessionTicker";
 import { useAgentBuilderStore } from "../store";
 
 export function AgentBuilderPage() {
   const {
-    data,
-    loading,
-    error,
     selectedProfile,
     selectedSkills,
     selectedLayers,
     selectedProvider,
     agentName,
-    savedAgents,
-    sessionTime,
-    fetchAgentData,
     setSelectedProfile,
     addSkill,
     removeSkill,
@@ -32,20 +28,13 @@ export function AgentBuilderPage() {
     loadSavedAgent,
     deleteSavedAgent,
     clearAllSavedAgents,
-    incrementSessionTime,
   } = useAgentBuilderStore(
     useShallow((state) => ({
-      data: state.data,
-      loading: state.loading,
-      error: state.error,
       selectedProfile: state.selectedProfile,
       selectedSkills: state.selectedSkills,
       selectedLayers: state.selectedLayers,
       selectedProvider: state.selectedProvider,
       agentName: state.agentName,
-      savedAgents: state.savedAgents,
-      sessionTime: state.sessionTime,
-      fetchAgentData: state.fetchAgentData,
       setSelectedProfile: state.setSelectedProfile,
       addSkill: state.addSkill,
       removeSkill: state.removeSkill,
@@ -57,21 +46,25 @@ export function AgentBuilderPage() {
       loadSavedAgent: state.loadSavedAgent,
       deleteSavedAgent: state.deleteSavedAgent,
       clearAllSavedAgents: state.clearAllSavedAgents,
-      incrementSessionTime: state.incrementSessionTime,
     })),
   );
+
+  const { data, loading, error, fetchAgentData } = useAgentBuilderStore(
+    useShallow((state) => ({
+      data: state.data,
+      loading: state.loading,
+      error: state.error,
+      fetchAgentData: state.fetchAgentData,
+    })),
+  );
+
+  const savedAgents = useAgentBuilderStore((state) => state.savedAgents);
 
   useEffect(() => {
     void fetchAgentData();
   }, [fetchAgentData]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      incrementSessionTime();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [incrementSessionTime]);
+  useSessionTicker();
 
   useAnalyticsHeartbeat(agentName);
 
@@ -105,9 +98,7 @@ export function AgentBuilderPage() {
               ? "Fetching Configuration..."
               : "Reload Configuration Data"}
           </button>
-          <span style={{ fontSize: "0.9rem", color: "#666" }}>
-            Session Active: {sessionTime}s
-          </span>
+          <SessionStatus />
         </div>
       </header>
 
