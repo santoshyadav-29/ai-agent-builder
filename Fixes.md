@@ -92,3 +92,11 @@
 - Applied consistent formatting (quotes, semicolons, wrapping) across newly extracted modules.
 - Why: keeps style uniform after modularization and improves readability during review.
 - Files: src/components/ConfigurationOptions.tsx, src/components/SavedAgentsPanel.tsx, src/constants/providers.ts, src/hooks/useAgentData.ts, src/types/agent.ts
+
+### 15) Reduced App.tsx to a pure app entry and added barrel exports
+
+- Moved full orchestration/render flow into `src/pages/AgentBuilderPage.tsx`.
+- Added barrel exports for components in `src/components/index.ts` and page exports in `src/pages/index.ts`.
+- Updated `src/App.tsx` to export the page component directly.
+- Why: keeps app entry minimal and centralizes component imports through a single module.
+- Files: src/App.tsx, src/pages/AgentBuilderPage.tsx, src/pages/index.ts, src/components/index.ts
