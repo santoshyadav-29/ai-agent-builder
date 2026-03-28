@@ -49,3 +49,9 @@
 - Updated app state initialization for saved agents to lazy-load from localStorage and persist via a dedicated effect.
 - Why: separates data concerns from UI composition and simplifies App state orchestration.
 - Files: src/App.tsx, src/hooks/useAgentData.ts
+
+### 10) Extracted configuration form into a dedicated component
+- Moved the entire left configuration pane into `src/components/ConfigurationOptions.tsx`.
+- Kept App focused on orchestration by passing explicit callback props for profile/skill/layer/provider updates.
+- Why: reduces App rendering complexity and improves component-level maintainability.
+- Files: src/App.tsx, src/components/ConfigurationOptions.tsx
