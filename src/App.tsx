@@ -1,42 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-
-// Define the types based on data.json
-interface AgentProfile {
-  id: string
-  name: string
-  description: string
-}
-
-interface Skill {
-  id: string
-  name: string
-  category: string
-  description: string
-}
-
-interface Layer {
-  id: string
-  name: string
-  type: string
-  description: string
-}
-
-interface AgentData {
-  agentProfiles: AgentProfile[]
-  skills: Skill[]
-  layers: Layer[]
-}
-
-interface SavedAgent {
-  id: string
-  name: string
-  profileId: string
-  skillIds: string[]
-  layerIds: string[]
-  provider?: string
-}
-
-type PersistedSavedAgent = Omit<SavedAgent, 'id'> & { id?: string }
+import { AI_PROVIDERS } from './constants/providers'
+import type { AgentData, PersistedSavedAgent, SavedAgent } from './types/agent'
 
 function App() {
   const [data, setData] = useState<AgentData | null>(null)
@@ -290,7 +254,7 @@ function App() {
                     style={{ width: '100%', padding: '0.5rem' }}
                   >
                     <option value="">-- Select an AI Provider --</option>
-                    {['Gemini', 'ChatGPT', 'Kimi', 'Claude', 'DeepSeek'].map((provider) => (
+                    {AI_PROVIDERS.map((provider) => (
                       <option key={provider} value={provider}>{provider}</option>
                     ))}
                   </select>

@@ -37,3 +37,9 @@
 - Enforced required fields before saving: name, profile, at least one skill, at least one layer, and provider.
 - Why: prevents persisting incomplete or logically invalid agent definitions.
 - File: src/App.tsx
+
+### 8) Modularized domain types and provider constants
+- Moved agent-related interfaces/types into `src/types/agent.ts`.
+- Moved AI provider list into `src/constants/providers.ts`.
+- Why: centralizes shared domain definitions and reduces component file size/coupling.
+- Files: src/App.tsx, src/types/agent.ts, src/constants/providers.ts
