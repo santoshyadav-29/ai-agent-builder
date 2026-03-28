@@ -88,7 +88,7 @@ function App() {
     }, 8000)
 
     return () => clearInterval(analyticsInterval)
-  }, [])
+  }, [agentName])
 
   const fetchAPI = async () => {
     const requestId = ++latestRequestIdRef.current

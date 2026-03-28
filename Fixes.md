@@ -16,3 +16,8 @@
 - Added request-id based staleness checks in the configuration fetch flow.
 - Why: when multiple fetches overlap, older responses should not win and overwrite newer state.
 - File: src/App.tsx
+
+### 4) Fixed stale analytics heartbeat dependency
+- Updated the analytics heartbeat effect to depend on the current agent name.
+- Why: without the dependency, the interval kept reading stale initial state.
+- File: src/App.tsx
