@@ -86,3 +86,9 @@
 - Moved analytics heartbeat side-effect to `src/hooks/useAnalyticsHeartbeat.ts`.
 - Why: keeps App focused on orchestration and reduces effect-related noise in container code.
 - Files: src/App.tsx, src/hooks/useSessionTime.ts, src/hooks/useAnalyticsHeartbeat.ts
+
+### 14) Normalized formatting in extracted modules
+
+- Applied consistent formatting (quotes, semicolons, wrapping) across newly extracted modules.
+- Why: keeps style uniform after modularization and improves readability during review.
+- Files: src/components/ConfigurationOptions.tsx, src/components/SavedAgentsPanel.tsx, src/constants/providers.ts, src/hooks/useAgentData.ts, src/types/agent.ts
