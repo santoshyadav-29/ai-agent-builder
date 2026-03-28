@@ -43,3 +43,9 @@
 - Moved AI provider list into `src/constants/providers.ts`.
 - Why: centralizes shared domain definitions and reduces component file size/coupling.
 - Files: src/App.tsx, src/types/agent.ts, src/constants/providers.ts
+
+### 9) Modularized data-loading logic into a reusable hook
+- Moved API loading, loading/error state, initial fetch, and stale-request guarding to `src/hooks/useAgentData.ts`.
+- Updated app state initialization for saved agents to lazy-load from localStorage and persist via a dedicated effect.
+- Why: separates data concerns from UI composition and simplifies App state orchestration.
+- Files: src/App.tsx, src/hooks/useAgentData.ts

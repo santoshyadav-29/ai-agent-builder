@@ -1,11 +1,28 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { AI_PROVIDERS } from './constants/providers'
-import type { AgentData, PersistedSavedAgent, SavedAgent } from './types/agent'
+import { useAgentData } from './hooks/useAgentData'
+import type { PersistedSavedAgent, SavedAgent } from './types/agent'
+
+const loadSavedAgents = (): SavedAgent[] => {
+  const saved = localStorage.getItem('savedAgents')
+  if (!saved) {
+    return []
+  }
+
+  try {
+    const parsed: PersistedSavedAgent[] = JSON.parse(saved)
+    return parsed.map((agent) => ({
+      ...agent,
+      id: agent.id ?? crypto.randomUUID(),
+    }))
+  } catch (e) {
+    console.error('Failed to parse saved agents', e)
+    return []
+  }
+}
 
 function App() {
-  const [data, setData] = useState<AgentData | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { data, loading, error, fetchAgentData } = useAgentData()
 
   // Selection states
   const [selectedProfile, setSelectedProfile] = useState<string>('')
@@ -14,17 +31,15 @@ function App() {
 
   // Saving states
   const [agentName, setAgentName] = useState('')
-  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>([])
+  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>(loadSavedAgents)
   const [selectedProvider, setSelectedProvider] = useState<string>('')
 
   const handleDeleteAgent = (idToRemove: string) => {
     const updatedAgents = savedAgents.filter((agent) => agent.id !== idToRemove)
     setSavedAgents(updatedAgents)
-    localStorage.setItem('savedAgents', JSON.stringify(updatedAgents))
   }
 
   const [sessionTime, setSessionTime] = useState(0)
-  const latestRequestIdRef = useRef(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,22 +49,8 @@ function App() {
   }, [])
 
   useEffect(() => {
-    // Load saved agents from local storage on component mount
-    const saved = localStorage.getItem('savedAgents')
-    if (saved) {
-      try {
-        const parsed: PersistedSavedAgent[] = JSON.parse(saved)
-        const normalized = parsed.map((agent) => ({
-          ...agent,
-          id: agent.id ?? crypto.randomUUID(),
-        }))
-        setSavedAgents(normalized)
-        localStorage.setItem('savedAgents', JSON.stringify(normalized))
-      } catch (e) {
-        console.error('Failed to parse saved agents', e)
-      }
-    }
-  }, [])
+    localStorage.setItem('savedAgents', JSON.stringify(savedAgents))
+  }, [savedAgents])
 
   useEffect(() => {
     const analyticsInterval = setInterval(() => {
@@ -62,42 +63,6 @@ function App() {
 
     return () => clearInterval(analyticsInterval)
   }, [agentName])
-
-  const fetchAPI = async () => {
-    const requestId = ++latestRequestIdRef.current
-    setLoading(true)
-    setError(null)
-    try {
-      // Simulate network delay and randomness (1 to 3 seconds)
-      const delay = Math.floor(Math.random() * 2000) + 1000
-      await new Promise((resolve) => setTimeout(resolve, delay))
-
-      const response = await fetch('/data.json')
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const jsonData: AgentData = await response.json()
-      if (requestId !== latestRequestIdRef.current) {
-        return
-      }
-      setData(jsonData)
-    } catch (err: unknown) {
-      if (requestId !== latestRequestIdRef.current) {
-        return
-      }
-      console.error('Error fetching data:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch agent data')
-    } finally {
-      if (requestId === latestRequestIdRef.current) {
-        setLoading(false)
-      }
-    }
-  }
-
-  // Fetch data on initial component mount
-  useEffect(() => {
-    fetchAPI()
-  }, [])
 
   const handleLayerSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const layerId = e.target.value;
@@ -152,7 +117,6 @@ function App() {
 
     const updatedAgents = [...savedAgents, newAgent]
     setSavedAgents(updatedAgents)
-    localStorage.setItem('savedAgents', JSON.stringify(updatedAgents))
     setAgentName('')
     alert(`Agent "${newAgent.name}" saved successfully!`)
   }
@@ -171,7 +135,7 @@ function App() {
         <h1>AI Agent Builder</h1>
         <p>Design your custom AI personality and capability set.</p>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button onClick={fetchAPI} disabled={loading}>
+          <button onClick={() => void fetchAgentData()} disabled={loading}>
             {loading ? 'Fetching Configuration...' : 'Reload Configuration Data'}
           </button>
           <span style={{ fontSize: '0.9rem', color: '#666' }}>
@@ -357,7 +321,6 @@ function App() {
                 onClick={() => {
                   if (confirm('Are you sure you want to clear all saved agents?')) {
                     setSavedAgents([])
-                    localStorage.removeItem('savedAgents')
                   }
                 }}
                 style={{ padding: '0.5rem 1rem', background: '#d32f2f', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
