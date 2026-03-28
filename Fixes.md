@@ -79,3 +79,10 @@
 - Added a dedicated clear-all handler in App and passed load/delete/clear actions as component props.
 - Why: separates persisted-list presentation from container-level state management.
 - Files: src/App.tsx, src/components/SavedAgentsPanel.tsx
+
+### 13) Extracted session and analytics effects into reusable hooks
+
+- Moved session timer logic to `src/hooks/useSessionTime.ts`.
+- Moved analytics heartbeat side-effect to `src/hooks/useAnalyticsHeartbeat.ts`.
+- Why: keeps App focused on orchestration and reduces effect-related noise in container code.
+- Files: src/App.tsx, src/hooks/useSessionTime.ts, src/hooks/useAnalyticsHeartbeat.ts

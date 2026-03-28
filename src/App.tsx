@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { ConfigurationOptions } from "./components/ConfigurationOptions";
 import { CurrentAgentConfiguration } from "./components/CurrentAgentConfiguration";
 import { SavedAgentsPanel } from "./components/SavedAgentsPanel";
+import { useAnalyticsHeartbeat } from "./hooks/useAnalyticsHeartbeat";
 import { useAgentData } from "./hooks/useAgentData";
+import { useSessionTime } from "./hooks/useSessionTime";
 import type { PersistedSavedAgent, SavedAgent } from "./types/agent";
 
 const loadSavedAgents = (): SavedAgent[] => {
@@ -43,34 +45,12 @@ function App() {
     setSavedAgents(updatedAgents);
   };
 
-  const [sessionTime, setSessionTime] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSessionTime((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const sessionTime = useSessionTime();
 
   useEffect(() => {
     localStorage.setItem("savedAgents", JSON.stringify(savedAgents));
   }, [savedAgents]);
-
-  useEffect(() => {
-    const analyticsInterval = setInterval(() => {
-      if (agentName !== "") {
-        console.log(
-          `[Analytics Heartbeat] User is working on agent named: "${agentName}"`,
-        );
-      } else {
-        console.log(
-          `[Analytics Heartbeat] User is working on an unnamed agent draft...`,
-        );
-      }
-    }, 8000);
-
-    return () => clearInterval(analyticsInterval);
-  }, [agentName]);
+  useAnalyticsHeartbeat(agentName);
 
   const handleLayerSelect = (layerId: string) => {
     if (layerId && !selectedLayers.includes(layerId)) {
