@@ -93,10 +93,12 @@ export function AgentBuilderPage() {
   };
 
   return (
-    <div className="container mx-auto flex min-h-screen flex-col gap-8 py-8">
+    <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
       <header className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Agent Builder</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            AI Agent Builder
+          </h1>
           <p className="text-muted-foreground">
             Design your custom AI personality and capability set.
           </p>
@@ -112,7 +114,10 @@ export function AgentBuilderPage() {
       </header>
 
       <main className="flex flex-1 flex-col gap-6">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <section
+          className="grid gap-6 lg:grid-cols-2"
+          aria-label="Agent configuration workspace"
+        >
           <ConfigurationOptions
             data={data}
             loading={loading}
@@ -138,7 +143,7 @@ export function AgentBuilderPage() {
             onAgentNameChange={setAgentName}
             onSaveAgent={handleSaveAgent}
           />
-        </div>
+        </section>
 
         <SavedAgentsPanel
           data={data}

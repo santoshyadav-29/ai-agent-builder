@@ -1,6 +1,21 @@
+import { useState } from "react";
 import { AI_PROVIDERS } from "../constants/providers";
 import type { AgentData, AgentValidationErrors } from "../types/agent";
-import { Card, CardContent, CardHeader, CardTitle, Label } from "./ui";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui";
 
 interface ConfigurationOptionsProps {
   data: AgentData | null;
@@ -27,8 +42,8 @@ export function ConfigurationOptions({
   onLayerSelect,
   onProviderChange,
 }: ConfigurationOptionsProps) {
-  const selectClassName =
-    "h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
+  const [skillSelectValue, setSkillSelectValue] = useState("");
+  const [layerSelectValue, setLayerSelectValue] = useState("");
 
   return (
     <section className="flex-1">
@@ -36,40 +51,54 @@ export function ConfigurationOptions({
         <CardHeader>
           <CardTitle>Configuration Options</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-      {error && (
-            <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-              Error: {error}
-            </div>
-      )}
+        <CardContent className="space-y-5">
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Configuration Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-      {loading && (
-            <div className="rounded-md border border-primary/20 bg-primary/10 p-3 text-sm text-primary">
-              Fetching configuration... this simulates API delay.
-            </div>
-      )}
+          {loading && (
+            <Alert>
+              <AlertTitle>Loading</AlertTitle>
+              <AlertDescription>
+                Fetching configuration data from the API.
+              </AlertDescription>
+            </Alert>
+          )}
 
-      {!data && !loading && !error && <p>No data loaded.</p>}
+          {!data && !loading && !error && (
+            <Alert>
+              <AlertTitle>No Configuration Loaded</AlertTitle>
+              <AlertDescription>
+                Reload configuration data to start building an agent.
+              </AlertDescription>
+            </Alert>
+          )}
 
-      {data && (
-            <div className="space-y-6">
+          {data && (
+            <div className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="profile-select">Base Profile</Label>
-            <select
-              id="profile-select"
-              value={selectedProfile}
-              onChange={(e) => {
-                onProfileChange(e.target.value);
-              }}
-                  className={selectClassName}
-            >
-              <option value="">-- Select a Profile --</option>
-              {data.agentProfiles.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+                <Select
+                  value={selectedProfile || undefined}
+                  onValueChange={onProfileChange}
+                >
+                  <SelectTrigger
+                    id="profile-select"
+                    aria-invalid={!!validationErrors.profileId}
+                  >
+                    <SelectValue placeholder="Select a profile" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {data.agentProfiles.map((profile) => (
+                      <SelectItem key={profile.id} value={profile.id}>
+                        {profile.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.profileId && (
                   <p className="text-xs text-destructive">
                     {validationErrors.profileId}
@@ -79,24 +108,27 @@ export function ConfigurationOptions({
 
               <div className="space-y-2">
                 <Label htmlFor="skill-select">Add Skill</Label>
-            <select
-              id="skill-select"
-              onChange={(e) => {
-                onSkillSelect(e.target.value);
-                e.target.value = "";
-              }}
-              defaultValue=""
-                  className={selectClassName}
-            >
-              <option value="" disabled>
-                -- Select a Skill to Add --
-              </option>
-              {data.skills.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} ({s.category})
-                </option>
-              ))}
-            </select>
+                <Select
+                  value={skillSelectValue || undefined}
+                  onValueChange={(value) => {
+                    onSkillSelect(value);
+                    setSkillSelectValue("");
+                  }}
+                >
+                  <SelectTrigger
+                    id="skill-select"
+                    aria-invalid={!!validationErrors.skillIds}
+                  >
+                    <SelectValue placeholder="Select a skill to add" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {data.skills.map((skill) => (
+                      <SelectItem key={skill.id} value={skill.id}>
+                        {skill.name} ({skill.category})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.skillIds && (
                   <p className="text-xs text-destructive">
                     {validationErrors.skillIds}
@@ -106,24 +138,27 @@ export function ConfigurationOptions({
 
               <div className="space-y-2">
                 <Label htmlFor="layer-select">Add Personality Layer</Label>
-            <select
-              id="layer-select"
-              onChange={(e) => {
-                onLayerSelect(e.target.value);
-                e.target.value = "";
-              }}
-              defaultValue=""
-                  className={selectClassName}
-            >
-              <option value="" disabled>
-                -- Select a Layer to Add --
-              </option>
-              {data.layers.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name} ({l.type})
-                </option>
-              ))}
-            </select>
+                <Select
+                  value={layerSelectValue || undefined}
+                  onValueChange={(value) => {
+                    onLayerSelect(value);
+                    setLayerSelectValue("");
+                  }}
+                >
+                  <SelectTrigger
+                    id="layer-select"
+                    aria-invalid={!!validationErrors.layerIds}
+                  >
+                    <SelectValue placeholder="Select a layer to add" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {data.layers.map((layer) => (
+                      <SelectItem key={layer.id} value={layer.id}>
+                        {layer.name} ({layer.type})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.layerIds && (
                   <p className="text-xs text-destructive">
                     {validationErrors.layerIds}
@@ -133,19 +168,24 @@ export function ConfigurationOptions({
 
               <div className="space-y-2">
                 <Label htmlFor="provider-select">AI Provider</Label>
-            <select
-              id="provider-select"
-              value={selectedProvider}
-              onChange={(e) => onProviderChange(e.target.value)}
-                  className={selectClassName}
-            >
-              <option value="">-- Select an AI Provider --</option>
-              {AI_PROVIDERS.map((provider) => (
-                <option key={provider} value={provider}>
-                  {provider}
-                </option>
-              ))}
-            </select>
+                <Select
+                  value={selectedProvider || undefined}
+                  onValueChange={onProviderChange}
+                >
+                  <SelectTrigger
+                    id="provider-select"
+                    aria-invalid={!!validationErrors.provider}
+                  >
+                    <SelectValue placeholder="Select an AI provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AI_PROVIDERS.map((provider) => (
+                      <SelectItem key={provider} value={provider}>
+                        {provider}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.provider && (
                   <p className="text-xs text-destructive">
                     {validationErrors.provider}
@@ -153,7 +193,7 @@ export function ConfigurationOptions({
                 )}
               </div>
             </div>
-      )}
+          )}
         </CardContent>
       </Card>
     </section>

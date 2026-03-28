@@ -125,7 +125,7 @@
 - Added reusable UI primitives (`Button`, `Input`, `Card`, `Label`, `Badge`, `Separator`) under `src/components/ui`.
 - Refactored page and feature components to use Tailwind utility classes with the shared UI primitives.
 - Why: establishes a professional, consistent, and maintainable design system foundation.
-- Files: tailwind.config.ts, postcss.config.js, src/index.css, src/components/ui/*, src/pages/AgentBuilderPage.tsx, src/components/*
+- Files: tailwind.config.ts, postcss.config.js, src/index.css, src/components/ui/_, src/pages/AgentBuilderPage.tsx, src/components/_
 
 ### 19) Migrated validation UX to Zod + Sonner and enforced uniqueness constraints
 
@@ -133,8 +133,17 @@
 - Added field-level validation error state in store and surfaced errors directly in configuration and save sections.
 - Replaced alert-based feedback with Sonner toasts for success/error/info notifications.
 - Enforced duplicate protection:
-	- disallow duplicate agent names (case-insensitive)
-	- disallow duplicate full agent configurations (profile + provider + skill set + layer set)
+  - disallow duplicate agent names (case-insensitive)
+  - disallow duplicate full agent configurations (profile + provider + skill set + layer set)
 - Cleared draft inputs after successful save (name, profile, skills, layers, provider).
 - Why: improves UX clarity, enforces data integrity, and replaces blocking browser dialogs with modern notifications.
 - Files: src/store/agentBuilderStore.ts, src/schemas/agent.ts, src/pages/AgentBuilderPage.tsx, src/components/ConfigurationOptions.tsx, src/components/CurrentAgentConfiguration.tsx, src/main.tsx
+
+### 20) Expanded shadcn component coverage and refined neutral layout
+
+- Replaced native select controls with accessible shadcn `Select` components in configuration workflows.
+- Added shadcn `Alert` component usage for load/error/empty states and cleaned up component structure for accessibility/readability.
+- Refined overall page/container layout with neutral Tailwind spacing and section semantics (no additional color-driven design pass).
+- Updated Sonner toaster to include a close button and moved it to bottom-right.
+- Why: improves consistency of accessible UI primitives and prepares a cleaner baseline for future visual design iteration.
+- Files: src/components/ConfigurationOptions.tsx, src/components/CurrentAgentConfiguration.tsx, src/components/SavedAgentsPanel.tsx, src/pages/AgentBuilderPage.tsx, src/components/ui/select.tsx, src/components/ui/alert.tsx, src/components/ui/index.ts, src/main.tsx, src/components/index.ts, package.json, bun.lock

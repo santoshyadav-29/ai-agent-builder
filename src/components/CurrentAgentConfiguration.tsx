@@ -50,81 +50,95 @@ export function CurrentAgentConfiguration({
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground">Profile</h3>
-        {selectedProfile && data ? (
-              <p className="rounded-md bg-secondary/60 p-3 text-sm">
-                <strong>{selectedProfileData?.name}</strong>: {" "}
-                {selectedProfileData?.description}
+            <h3 className="text-sm font-semibold text-muted-foreground">
+              Profile
+            </h3>
+            {selectedProfileData ? (
+              <div className="rounded-md border p-3 text-sm">
+                <p className="font-medium">{selectedProfileData.name}</p>
+                <p className="text-muted-foreground">
+                  {selectedProfileData.description}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No profile selected.
               </p>
-        ) : (
-              <p className="text-sm text-muted-foreground">No profile selected.</p>
-        )}
+            )}
           </div>
 
           <Separator />
 
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground">Selected Skills</h3>
-        {selectedSkills.length > 0 && data ? (
+            <h3 className="text-sm font-semibold text-muted-foreground">
+              Selected Skills
+            </h3>
+            {selectedSkills.length > 0 && data ? (
               <ul className="space-y-2">
-            {selectedSkills.map((skillId) => {
-              const skill = data.skills.find((s) => s.id === skillId);
-              return (
+                {selectedSkills.map((skillId) => {
+                  const skill = data.skills.find((item) => item.id === skillId);
+                  return (
                     <li
                       key={skillId}
                       className="flex items-center justify-between rounded-md border p-2"
                     >
                       <Badge variant="secondary">{skill?.name}</Badge>
                       <Button
-                    onClick={() => onRemoveSkill(skillId)}
+                        onClick={() => onRemoveSkill(skillId)}
                         size="sm"
                         variant="outline"
-                  >
-                    Remove
+                      >
+                        Remove
                       </Button>
                     </li>
-              );
-            })}
-          </ul>
-        ) : (
+                  );
+                })}
+              </ul>
+            ) : (
               <p className="text-sm text-muted-foreground">No skills added.</p>
-        )}
+            )}
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground">Selected Layers</h3>
-        {selectedLayers.length > 0 && data ? (
+            <h3 className="text-sm font-semibold text-muted-foreground">
+              Selected Layers
+            </h3>
+            {selectedLayers.length > 0 && data ? (
               <ul className="space-y-2">
-            {selectedLayers.map((layerId) => {
-              const layer = data.layers.find((l) => l.id === layerId);
-              return (
+                {selectedLayers.map((layerId) => {
+                  const layer = data.layers.find((item) => item.id === layerId);
+                  return (
                     <li
                       key={layerId}
                       className="flex items-center justify-between rounded-md border p-2"
                     >
                       <Badge variant="outline">{layer?.name}</Badge>
                       <Button
-                    onClick={() => onRemoveLayer(layerId)}
+                        onClick={() => onRemoveLayer(layerId)}
                         size="sm"
                         variant="outline"
-                  >
-                    Remove
+                      >
+                        Remove
                       </Button>
                     </li>
-              );
-            })}
-          </ul>
-        ) : (
+                  );
+                })}
+              </ul>
+            ) : (
               <p className="text-sm text-muted-foreground">No layers added.</p>
-        )}
+            )}
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground">Selected Provider</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground">
+              Selected Provider
+            </h3>
             {selectedProvider ? (
               <Badge>{selectedProvider}</Badge>
             ) : (
-              <p className="text-sm text-muted-foreground">No provider selected.</p>
+              <p className="text-sm text-muted-foreground">
+                No provider selected.
+              </p>
             )}
           </div>
 
@@ -132,22 +146,29 @@ export function CurrentAgentConfiguration({
 
           <div className="space-y-2">
             <Label htmlFor="agent-name-input">Save This Agent</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <Input
                 id="agent-name-input"
-              type="text"
-              placeholder="Enter agent name..."
-              value={agentName}
-              onChange={(e) => onAgentNameChange(e.target.value)}
+                type="text"
+                placeholder="Enter agent name..."
+                value={agentName}
+                onChange={(e) => onAgentNameChange(e.target.value)}
                 className="flex-1"
-            />
-              <Button onClick={onSaveAgent}>Save Agent</Button>
+                aria-invalid={!!validationErrors.name}
+              />
+              <Button onClick={onSaveAgent} className="sm:w-auto">
+                Save Agent
+              </Button>
             </div>
             {validationErrors.name && (
-              <p className="text-xs text-destructive">{validationErrors.name}</p>
+              <p className="text-xs text-destructive">
+                {validationErrors.name}
+              </p>
             )}
             {validationErrors.form && (
-              <p className="text-xs text-destructive">{validationErrors.form}</p>
+              <p className="text-xs text-destructive">
+                {validationErrors.form}
+              </p>
             )}
           </div>
         </CardContent>
