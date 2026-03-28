@@ -100,3 +100,12 @@
 - Updated `src/App.tsx` to export the page component directly.
 - Why: keeps app entry minimal and centralizes component imports through a single module.
 - Files: src/App.tsx, src/pages/AgentBuilderPage.tsx, src/pages/index.ts, src/components/index.ts
+
+### 16) Migrated app state to Zustand store with typed actions and persistence
+
+- Added centralized store in `src/store/agentBuilderStore.ts` and barrel export in `src/store/index.ts`.
+- Moved selection state, draft state, saved agents, session timer, loading/error/data state, and async fetch flow into typed store actions.
+- Added store-level persistence for saved agents with normalization for legacy entries missing IDs.
+- Rewired `src/pages/AgentBuilderPage.tsx` to consume store selectors/actions and removed obsolete local-state hooks.
+- Why: enforces a single source of truth, reduces prop/state orchestration complexity, and aligns with professional state-management practices.
+- Files: src/pages/AgentBuilderPage.tsx, src/store/agentBuilderStore.ts, src/store/index.ts, src/hooks/useAgentData.ts, src/hooks/useSessionTime.ts, package.json, bun.lock

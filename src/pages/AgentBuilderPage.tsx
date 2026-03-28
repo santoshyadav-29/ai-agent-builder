@@ -1,130 +1,88 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
   ConfigurationOptions,
   CurrentAgentConfiguration,
   SavedAgentsPanel,
 } from "../components";
 import { useAnalyticsHeartbeat } from "../hooks/useAnalyticsHeartbeat";
-import { useAgentData } from "../hooks/useAgentData";
-import { useSessionTime } from "../hooks/useSessionTime";
-import type { PersistedSavedAgent, SavedAgent } from "../types/agent";
-
-const loadSavedAgents = (): SavedAgent[] => {
-  const saved = localStorage.getItem("savedAgents");
-  if (!saved) {
-    return [];
-  }
-
-  try {
-    const parsed: PersistedSavedAgent[] = JSON.parse(saved);
-    return parsed.map((agent) => ({
-      ...agent,
-      id: agent.id ?? crypto.randomUUID(),
-    }));
-  } catch (e) {
-    console.error("Failed to parse saved agents", e);
-    return [];
-  }
-};
+import { useAgentBuilderStore } from "../store";
 
 export function AgentBuilderPage() {
-  const { data, loading, error, fetchAgentData } = useAgentData();
-
-  const [selectedProfile, setSelectedProfile] = useState<string>("");
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [selectedLayers, setSelectedLayers] = useState<string[]>([]);
-
-  const [agentName, setAgentName] = useState("");
-  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>(loadSavedAgents);
-  const [selectedProvider, setSelectedProvider] = useState<string>("");
-
-  const sessionTime = useSessionTime();
+  const {
+    data,
+    loading,
+    error,
+    selectedProfile,
+    selectedSkills,
+    selectedLayers,
+    selectedProvider,
+    agentName,
+    savedAgents,
+    sessionTime,
+    fetchAgentData,
+    setSelectedProfile,
+    addSkill,
+    removeSkill,
+    addLayer,
+    removeLayer,
+    setSelectedProvider,
+    setAgentName,
+    saveCurrentAgent,
+    loadSavedAgent,
+    deleteSavedAgent,
+    clearAllSavedAgents,
+    incrementSessionTime,
+  } = useAgentBuilderStore(
+    useShallow((state) => ({
+      data: state.data,
+      loading: state.loading,
+      error: state.error,
+      selectedProfile: state.selectedProfile,
+      selectedSkills: state.selectedSkills,
+      selectedLayers: state.selectedLayers,
+      selectedProvider: state.selectedProvider,
+      agentName: state.agentName,
+      savedAgents: state.savedAgents,
+      sessionTime: state.sessionTime,
+      fetchAgentData: state.fetchAgentData,
+      setSelectedProfile: state.setSelectedProfile,
+      addSkill: state.addSkill,
+      removeSkill: state.removeSkill,
+      addLayer: state.addLayer,
+      removeLayer: state.removeLayer,
+      setSelectedProvider: state.setSelectedProvider,
+      setAgentName: state.setAgentName,
+      saveCurrentAgent: state.saveCurrentAgent,
+      loadSavedAgent: state.loadSavedAgent,
+      deleteSavedAgent: state.deleteSavedAgent,
+      clearAllSavedAgents: state.clearAllSavedAgents,
+      incrementSessionTime: state.incrementSessionTime,
+    })),
+  );
 
   useEffect(() => {
-    localStorage.setItem("savedAgents", JSON.stringify(savedAgents));
-  }, [savedAgents]);
+    void fetchAgentData();
+  }, [fetchAgentData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      incrementSessionTime();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [incrementSessionTime]);
 
   useAnalyticsHeartbeat(agentName);
 
-  const handleDeleteAgent = (idToRemove: string) => {
-    const updatedAgents = savedAgents.filter(
-      (agent) => agent.id !== idToRemove,
-    );
-    setSavedAgents(updatedAgents);
-  };
-
-  const handleLayerSelect = (layerId: string) => {
-    if (layerId && !selectedLayers.includes(layerId)) {
-      setSelectedLayers([...selectedLayers, layerId]);
-    }
-  };
-
-  const handleSkillSelect = (skillId: string) => {
-    if (skillId && !selectedSkills.includes(skillId)) {
-      setSelectedSkills([...selectedSkills, skillId]);
-    }
-  };
-
-  const handleRemoveSkill = (skillId: string) => {
-    setSelectedSkills(selectedSkills.filter((id) => id !== skillId));
-  };
-
-  const handleRemoveLayer = (layerId: string) => {
-    setSelectedLayers(selectedLayers.filter((id) => id !== layerId));
-  };
-
   const handleSaveAgent = () => {
-    if (!agentName.trim()) {
-      alert("Please enter a name for your agent.");
-      return;
-    }
-
-    if (!selectedProfile) {
-      alert("Please select a base profile before saving.");
-      return;
-    }
-
-    if (selectedSkills.length === 0) {
-      alert("Please add at least one skill before saving.");
-      return;
-    }
-
-    if (selectedLayers.length === 0) {
-      alert("Please add at least one personality layer before saving.");
-      return;
-    }
-
-    if (!selectedProvider) {
-      alert("Please select an AI provider before saving.");
-      return;
-    }
-
-    const newAgent: SavedAgent = {
-      id: crypto.randomUUID(),
-      name: agentName,
-      profileId: selectedProfile,
-      skillIds: selectedSkills,
-      layerIds: selectedLayers,
-      provider: selectedProvider,
-    };
-
-    const updatedAgents = [...savedAgents, newAgent];
-    setSavedAgents(updatedAgents);
-    setAgentName("");
-    alert(`Agent "${newAgent.name}" saved successfully!`);
-  };
-
-  const handleLoadAgent = (agent: SavedAgent) => {
-    setSelectedProfile(agent.profileId || "");
-    setSelectedSkills(agent.skillIds || []);
-    setSelectedLayers([...(agent.layerIds || [])]);
-    setAgentName(agent.name);
-    setSelectedProvider(agent.provider || "");
+    const result = saveCurrentAgent();
+    alert(result.message);
   };
 
   const handleClearAllSavedAgents = () => {
     if (confirm("Are you sure you want to clear all saved agents?")) {
-      setSavedAgents([]);
+      clearAllSavedAgents();
     }
   };
 
@@ -169,8 +127,8 @@ export function AgentBuilderPage() {
             selectedProfile={selectedProfile}
             selectedProvider={selectedProvider}
             onProfileChange={setSelectedProfile}
-            onSkillSelect={handleSkillSelect}
-            onLayerSelect={handleLayerSelect}
+            onSkillSelect={addSkill}
+            onLayerSelect={addLayer}
             onProviderChange={setSelectedProvider}
           />
           <CurrentAgentConfiguration
@@ -180,8 +138,8 @@ export function AgentBuilderPage() {
             selectedLayers={selectedLayers}
             selectedProvider={selectedProvider}
             agentName={agentName}
-            onRemoveSkill={handleRemoveSkill}
-            onRemoveLayer={handleRemoveLayer}
+            onRemoveSkill={removeSkill}
+            onRemoveLayer={removeLayer}
             onAgentNameChange={setAgentName}
             onSaveAgent={handleSaveAgent}
           />
@@ -190,8 +148,8 @@ export function AgentBuilderPage() {
         <SavedAgentsPanel
           data={data}
           savedAgents={savedAgents}
-          onLoadAgent={handleLoadAgent}
-          onDeleteAgent={handleDeleteAgent}
+          onLoadAgent={loadSavedAgent}
+          onDeleteAgent={deleteSavedAgent}
           onClearAll={handleClearAllSavedAgents}
         />
       </main>
