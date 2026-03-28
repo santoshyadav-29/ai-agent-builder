@@ -32,3 +32,8 @@
 - Included a localStorage normalization step so older saved items without IDs are upgraded automatically.
 - Why: index keys are unstable during list updates and can cause UI/state mismatches.
 - File: src/App.tsx
+
+### 7) Added full save-time validation for agent configuration
+- Enforced required fields before saving: name, profile, at least one skill, at least one layer, and provider.
+- Why: prevents persisting incomplete or logically invalid agent definitions.
+- File: src/App.tsx

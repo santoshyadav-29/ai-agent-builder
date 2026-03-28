@@ -157,6 +157,26 @@ function App() {
       return
     }
 
+    if (!selectedProfile) {
+      alert('Please select a base profile before saving.')
+      return
+    }
+
+    if (selectedSkills.length === 0) {
+      alert('Please add at least one skill before saving.')
+      return
+    }
+
+    if (selectedLayers.length === 0) {
+      alert('Please add at least one personality layer before saving.')
+      return
+    }
+
+    if (!selectedProvider) {
+      alert('Please select an AI provider before saving.')
+      return
+    }
+
     const newAgent: SavedAgent = {
       id: crypto.randomUUID(),
       name: agentName,
