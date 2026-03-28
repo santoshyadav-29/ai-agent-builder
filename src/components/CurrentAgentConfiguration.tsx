@@ -1,7 +1,19 @@
-import type { AgentData } from "../types/agent";
+import type { AgentData, AgentValidationErrors } from "../types/agent";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Separator,
+} from "./ui";
 
 interface CurrentAgentConfigurationProps {
   data: AgentData | null;
+  validationErrors: AgentValidationErrors;
   selectedProfile: string;
   selectedSkills: string[];
   selectedLayers: string[];
@@ -15,6 +27,7 @@ interface CurrentAgentConfigurationProps {
 
 export function CurrentAgentConfiguration({
   data,
+  validationErrors,
   selectedProfile,
   selectedSkills,
   selectedLayers,
@@ -25,117 +38,120 @@ export function CurrentAgentConfiguration({
   onAgentNameChange,
   onSaveAgent,
 }: CurrentAgentConfigurationProps) {
+  const selectedProfileData = data?.agentProfiles.find(
+    (profile) => profile.id === selectedProfile,
+  );
+
   return (
-    <section style={{ flex: "1 1 50%", paddingLeft: "1rem" }}>
-      <h2>Current Agent Configuration</h2>
-
-      <div
-        style={{
-          background: "#f5f5f5",
-          padding: "1rem",
-          borderRadius: "8px",
-          minHeight: "300px",
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>Profile</h3>
+    <section className="flex-1">
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle>Current Agent Configuration</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground">Profile</h3>
         {selectedProfile && data ? (
-          <p>
-            <strong>
-              {data.agentProfiles.find((p) => p.id === selectedProfile)?.name}
-            </strong>
-            :{" "}
-            {
-              data.agentProfiles.find((p) => p.id === selectedProfile)
-                ?.description
-            }
-          </p>
+              <p className="rounded-md bg-secondary/60 p-3 text-sm">
+                <strong>{selectedProfileData?.name}</strong>: {" "}
+                {selectedProfileData?.description}
+              </p>
         ) : (
-          <p style={{ color: "#888" }}>No profile selected.</p>
+              <p className="text-sm text-muted-foreground">No profile selected.</p>
         )}
+          </div>
 
-        <h3>Selected Skills</h3>
+          <Separator />
+
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground">Selected Skills</h3>
         {selectedSkills.length > 0 && data ? (
-          <ul style={{ paddingLeft: "1.5rem" }}>
+              <ul className="space-y-2">
             {selectedSkills.map((skillId) => {
               const skill = data.skills.find((s) => s.id === skillId);
               return (
-                <li key={skillId} style={{ marginBottom: "0.5rem" }}>
-                  {skill?.name}
-                  <button
+                    <li
+                      key={skillId}
+                      className="flex items-center justify-between rounded-md border p-2"
+                    >
+                      <Badge variant="secondary">{skill?.name}</Badge>
+                      <Button
                     onClick={() => onRemoveSkill(skillId)}
-                    style={{
-                      marginLeft: "1rem",
-                      fontSize: "0.8rem",
-                      cursor: "pointer",
-                    }}
+                        size="sm"
+                        variant="outline"
                   >
                     Remove
-                  </button>
-                </li>
+                      </Button>
+                    </li>
               );
             })}
           </ul>
         ) : (
-          <p style={{ color: "#888" }}>No skills added.</p>
+              <p className="text-sm text-muted-foreground">No skills added.</p>
         )}
+          </div>
 
-        <h3>Selected Layers</h3>
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground">Selected Layers</h3>
         {selectedLayers.length > 0 && data ? (
-          <ul style={{ paddingLeft: "1.5rem" }}>
+              <ul className="space-y-2">
             {selectedLayers.map((layerId) => {
               const layer = data.layers.find((l) => l.id === layerId);
               return (
-                <li key={layerId} style={{ marginBottom: "0.5rem" }}>
-                  {layer?.name}
-                  <button
+                    <li
+                      key={layerId}
+                      className="flex items-center justify-between rounded-md border p-2"
+                    >
+                      <Badge variant="outline">{layer?.name}</Badge>
+                      <Button
                     onClick={() => onRemoveLayer(layerId)}
-                    style={{
-                      marginLeft: "1rem",
-                      fontSize: "0.8rem",
-                      cursor: "pointer",
-                    }}
+                        size="sm"
+                        variant="outline"
                   >
                     Remove
-                  </button>
-                </li>
+                      </Button>
+                    </li>
               );
             })}
           </ul>
         ) : (
-          <p style={{ color: "#888" }}>No layers added.</p>
+              <p className="text-sm text-muted-foreground">No layers added.</p>
         )}
+          </div>
 
-        <h3>Selected Provider</h3>
-        {selectedProvider ? (
-          <p>
-            <strong>{selectedProvider}</strong>
-          </p>
-        ) : (
-          <p style={{ color: "#888" }}>No provider selected.</p>
-        )}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground">Selected Provider</h3>
+            {selectedProvider ? (
+              <Badge>{selectedProvider}</Badge>
+            ) : (
+              <p className="text-sm text-muted-foreground">No provider selected.</p>
+            )}
+          </div>
 
-        <div
-          style={{
-            marginTop: "2rem",
-            borderTop: "1px solid #ddd",
-            paddingTop: "1rem",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Save This Agent</h3>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <input
+          <Separator />
+
+          <div className="space-y-2">
+            <Label htmlFor="agent-name-input">Save This Agent</Label>
+            <div className="flex gap-2">
+              <Input
+                id="agent-name-input"
               type="text"
               placeholder="Enter agent name..."
               value={agentName}
               onChange={(e) => onAgentNameChange(e.target.value)}
-              style={{ flex: 1, padding: "0.5rem" }}
+                className="flex-1"
             />
-            <button onClick={onSaveAgent} style={{ padding: "0.5rem 1rem" }}>
-              Save Agent
-            </button>
+              <Button onClick={onSaveAgent}>Save Agent</Button>
+            </div>
+            {validationErrors.name && (
+              <p className="text-xs text-destructive">{validationErrors.name}</p>
+            )}
+            {validationErrors.form && (
+              <p className="text-xs text-destructive">{validationErrors.form}</p>
+            )}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

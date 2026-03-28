@@ -33,4 +33,13 @@ export interface SavedAgent {
   provider?: string;
 }
 
+export interface AgentValidationErrors {
+  name?: string;
+  profileId?: string;
+  skillIds?: string;
+  layerIds?: string;
+  provider?: string;
+  form?: string;
+}
+
 export type PersistedSavedAgent = Omit<SavedAgent, "id"> & { id?: string };

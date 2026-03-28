@@ -1,15 +1,70 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type {
+  AgentValidationErrors,
   AgentData,
   PersistedSavedAgent,
   SavedAgent,
 } from "../types/agent";
+import { agentDraftSchema } from "../schemas/agent";
 
 interface SaveAgentResult {
   ok: boolean;
   message: string;
 }
+
+const VALIDATION_FIELD_ORDER: Array<keyof AgentValidationErrors> = [
+  "name",
+  "profileId",
+  "skillIds",
+  "layerIds",
+  "provider",
+  "form",
+];
+
+const getPrimaryValidationMessage = (
+  errors: AgentValidationErrors,
+  fallback: string,
+): string => {
+  for (const field of VALIDATION_FIELD_ORDER) {
+    const message = errors[field];
+    if (message) {
+      return message;
+    }
+  }
+
+  return fallback;
+};
+
+const clearValidationFields = (
+  errors: AgentValidationErrors,
+  fieldsToClear: Array<keyof AgentValidationErrors>,
+): AgentValidationErrors => {
+  const next = { ...errors };
+  for (const field of fieldsToClear) {
+    delete next[field];
+  }
+
+  return next;
+};
+
+const normalizeSelection = (ids: string[]): string[] => {
+  return [...new Set(ids)].sort();
+};
+
+const buildConfigurationFingerprint = (agent: {
+  profileId: string;
+  provider?: string;
+  skillIds: string[];
+  layerIds: string[];
+}): string => {
+  return [
+    agent.profileId,
+    agent.provider ?? "",
+    normalizeSelection(agent.skillIds).join("|"),
+    normalizeSelection(agent.layerIds).join("|"),
+  ].join("::");
+};
 
 const isPersistedSavedAgent = (
   value: unknown,
@@ -35,6 +90,7 @@ interface AgentBuilderState {
   data: AgentData | null;
   loading: boolean;
   error: string | null;
+  validationErrors: AgentValidationErrors;
   selectedProfile: string;
   selectedSkills: string[];
   selectedLayers: string[];
@@ -77,6 +133,7 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
         data: null,
         loading: false,
         error: null,
+        validationErrors: {},
         selectedProfile: "",
         selectedSkills: [],
         selectedLayers: [],
@@ -120,16 +177,37 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
         },
 
         setSelectedProfile: (profileId) => {
-          set({ selectedProfile: profileId });
+          set((state) => ({
+            selectedProfile: profileId,
+            validationErrors: clearValidationFields(state.validationErrors, [
+              "profileId",
+              "form",
+            ]),
+          }));
         },
 
         addSkill: (skillId) => {
           set((state) => {
-            if (!skillId || state.selectedSkills.includes(skillId)) {
+            if (!skillId) {
               return state;
             }
 
-            return { selectedSkills: [...state.selectedSkills, skillId] };
+            if (state.selectedSkills.includes(skillId)) {
+              return {
+                validationErrors: clearValidationFields(state.validationErrors, [
+                  "skillIds",
+                  "form",
+                ]),
+              };
+            }
+
+            return {
+              selectedSkills: [...state.selectedSkills, skillId],
+              validationErrors: clearValidationFields(state.validationErrors, [
+                "skillIds",
+                "form",
+              ]),
+            };
           });
         },
 
@@ -141,11 +219,26 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
 
         addLayer: (layerId) => {
           set((state) => {
-            if (!layerId || state.selectedLayers.includes(layerId)) {
+            if (!layerId) {
               return state;
             }
 
-            return { selectedLayers: [...state.selectedLayers, layerId] };
+            if (state.selectedLayers.includes(layerId)) {
+              return {
+                validationErrors: clearValidationFields(state.validationErrors, [
+                  "layerIds",
+                  "form",
+                ]),
+              };
+            }
+
+            return {
+              selectedLayers: [...state.selectedLayers, layerId],
+              validationErrors: clearValidationFields(state.validationErrors, [
+                "layerIds",
+                "form",
+              ]),
+            };
           });
         },
 
@@ -156,11 +249,23 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
         },
 
         setSelectedProvider: (provider) => {
-          set({ selectedProvider: provider });
+          set((state) => ({
+            selectedProvider: provider,
+            validationErrors: clearValidationFields(state.validationErrors, [
+              "provider",
+              "form",
+            ]),
+          }));
         },
 
         setAgentName: (name) => {
-          set({ agentName: name });
+          set((state) => ({
+            agentName: name,
+            validationErrors: clearValidationFields(state.validationErrors, [
+              "name",
+              "form",
+            ]),
+          }));
         },
 
         saveCurrentAgent: () => {
@@ -173,50 +278,90 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
             savedAgents,
           } = get();
 
-          if (!agentName.trim()) {
-            return { ok: false, message: "Please enter a name for your agent." };
-          }
-
-          if (!selectedProfile) {
-            return {
-              ok: false,
-              message: "Please select a base profile before saving.",
-            };
-          }
-
-          if (selectedSkills.length === 0) {
-            return {
-              ok: false,
-              message: "Please add at least one skill before saving.",
-            };
-          }
-
-          if (selectedLayers.length === 0) {
-            return {
-              ok: false,
-              message: "Please add at least one personality layer before saving.",
-            };
-          }
-
-          if (!selectedProvider) {
-            return {
-              ok: false,
-              message: "Please select an AI provider before saving.",
-            };
-          }
-
-          const newAgent: SavedAgent = {
-            id: crypto.randomUUID(),
-            name: agentName,
+          const draft = {
+            name: agentName.trim(),
             profileId: selectedProfile,
             skillIds: selectedSkills,
             layerIds: selectedLayers,
             provider: selectedProvider,
           };
 
+          const validationResult = agentDraftSchema.safeParse(draft);
+          if (!validationResult.success) {
+            const fieldErrors = validationResult.error.flatten().fieldErrors;
+            const nextErrors: AgentValidationErrors = {
+              name: fieldErrors.name?.[0],
+              profileId: fieldErrors.profileId?.[0],
+              skillIds: fieldErrors.skillIds?.[0],
+              layerIds: fieldErrors.layerIds?.[0],
+              provider: fieldErrors.provider?.[0],
+            };
+
+            set({ validationErrors: nextErrors });
+            return {
+              ok: false,
+              message: getPrimaryValidationMessage(
+                nextErrors,
+                "Please fix validation errors before saving.",
+              ),
+            };
+          }
+
+          const normalizedName = validationResult.data.name.toLowerCase();
+          const hasDuplicateName = savedAgents.some(
+            (agent) => agent.name.trim().toLowerCase() === normalizedName,
+          );
+
+          if (hasDuplicateName) {
+            const nextErrors: AgentValidationErrors = {
+              name: "An agent with this name already exists.",
+            };
+            set({ validationErrors: nextErrors });
+            return {
+              ok: false,
+              message: getPrimaryValidationMessage(
+                nextErrors,
+                "An agent with this name already exists.",
+              ),
+            };
+          }
+
+          const draftFingerprint = buildConfigurationFingerprint(validationResult.data);
+          const hasDuplicateConfiguration = savedAgents.some(
+            (agent) => buildConfigurationFingerprint(agent) === draftFingerprint,
+          );
+
+          if (hasDuplicateConfiguration) {
+            const nextErrors: AgentValidationErrors = {
+              form: "An identical agent configuration already exists.",
+            };
+            set({ validationErrors: nextErrors });
+            return {
+              ok: false,
+              message: getPrimaryValidationMessage(
+                nextErrors,
+                "An identical agent configuration already exists.",
+              ),
+            };
+          }
+
+          const newAgent: SavedAgent = {
+            id: crypto.randomUUID(),
+            name: validationResult.data.name,
+            profileId: validationResult.data.profileId,
+            skillIds: validationResult.data.skillIds,
+            layerIds: validationResult.data.layerIds,
+            provider: validationResult.data.provider,
+          };
+
           set({
             savedAgents: [...savedAgents, newAgent],
             agentName: "",
+            selectedProfile: "",
+            selectedSkills: [],
+            selectedLayers: [],
+            selectedProvider: "",
+            validationErrors: {},
           });
 
           return {
@@ -232,6 +377,7 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
             selectedLayers: [...(agent.layerIds || [])],
             agentName: agent.name,
             selectedProvider: agent.provider || "",
+            validationErrors: {},
           });
         },
 

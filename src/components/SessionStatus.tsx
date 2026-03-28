@@ -1,11 +1,12 @@
 import { useAgentBuilderStore } from "../store";
+import { Badge } from "./ui";
 
 export function SessionStatus() {
   const sessionTime = useAgentBuilderStore((state) => state.sessionTime);
 
   return (
-    <span style={{ fontSize: "0.9rem", color: "#666" }}>
+    <Badge variant="secondary" className="font-normal">
       Session Active: {sessionTime}s
-    </span>
+    </Badge>
   );
 }

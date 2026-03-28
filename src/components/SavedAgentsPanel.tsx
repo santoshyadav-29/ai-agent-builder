@@ -1,4 +1,12 @@
 import type { AgentData, SavedAgent } from "../types/agent";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "./ui";
 
 interface SavedAgentsPanelProps {
   data: AgentData | null;
@@ -20,90 +28,56 @@ export function SavedAgentsPanel({
   }
 
   return (
-    <section
-      style={{ padding: "1.5rem", background: "#e0f7fa", borderRadius: "8px" }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>Saved Agents</h2>
-        <button
-          onClick={onClearAll}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "#d32f2f",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
+    <section className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold tracking-tight">Saved Agents</h2>
+        <Button onClick={onClearAll} variant="destructive" size="sm">
           Clear All
-        </button>
+        </Button>
       </div>
-      <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {savedAgents.map((agent) => (
-          <div
-            key={agent.id}
-            style={{
-              padding: "1rem",
-              background: "white",
-              borderRadius: "8px",
-              border: "1px solid #b2ebf2",
-              minWidth: "220px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-            }}
-          >
-            <h3 style={{ marginTop: 0, color: "#006064" }}>{agent.name}</h3>
-            <p style={{ margin: "0.5rem 0", fontSize: "0.9rem" }}>
-              <strong>Profile:</strong>{" "}
-              {data?.agentProfiles.find((p) => p.id === agent.profileId)
-                ?.name || "None Selected"}
-            </p>
-            <p style={{ margin: "0.5rem 0", fontSize: "0.9rem" }}>
-              <strong>Skills:</strong> {agent.skillIds?.length || 0} included
-            </p>
-            <p style={{ margin: "0.5rem 0", fontSize: "0.9rem" }}>
-              <strong>Layers:</strong> {agent.layerIds?.length || 0} included
-            </p>
-            <p style={{ margin: "0.5rem 0", fontSize: "0.9rem" }}>
-              <strong>Provider:</strong> {agent.provider || "None"}
-            </p>
-            <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-              <button
+          <Card key={agent.id}>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">{agent.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Profile</span>
+                <Badge variant="secondary">
+                  {data?.agentProfiles.find((p) => p.id === agent.profileId)
+                    ?.name || "None Selected"}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Skills</span>
+                <span>{agent.skillIds?.length || 0}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Layers</span>
+                <span>{agent.layerIds?.length || 0}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Provider</span>
+                <Badge variant="outline">{agent.provider || "None"}</Badge>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button
                 onClick={() => onLoadAgent(agent)}
-                style={{
-                  flex: 1,
-                  padding: "0.5rem",
-                  background: "#00838f",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                  className="flex-1"
+                  variant="secondary"
               >
                 Load
-              </button>
-              <button
+                </Button>
+                <Button
                 onClick={() => onDeleteAgent(agent.id)}
-                style={{
-                  padding: "0.5rem",
-                  background: "#d32f2f",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                  variant="destructive"
               >
                 Delete
-              </button>
-            </div>
-          </div>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </section>

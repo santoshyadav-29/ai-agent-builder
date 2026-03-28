@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { toast } from "sonner";
 import {
   ConfigurationOptions,
   CurrentAgentConfiguration,
@@ -9,6 +10,7 @@ import {
 import { useAnalyticsHeartbeat } from "../hooks/useAnalyticsHeartbeat";
 import { useSessionTicker } from "../hooks/useSessionTicker";
 import { useAgentBuilderStore } from "../store";
+import { Button } from "../components/ui";
 
 export function AgentBuilderPage() {
   const {
@@ -17,6 +19,7 @@ export function AgentBuilderPage() {
     selectedLayers,
     selectedProvider,
     agentName,
+    validationErrors,
     setSelectedProfile,
     addSkill,
     removeSkill,
@@ -35,6 +38,7 @@ export function AgentBuilderPage() {
       selectedLayers: state.selectedLayers,
       selectedProvider: state.selectedProvider,
       agentName: state.agentName,
+      validationErrors: state.validationErrors,
       setSelectedProfile: state.setSelectedProfile,
       addSkill: state.addSkill,
       removeSkill: state.removeSkill,
@@ -70,51 +74,50 @@ export function AgentBuilderPage() {
 
   const handleSaveAgent = () => {
     const result = saveCurrentAgent();
-    alert(result.message);
+    if (result.ok) {
+      toast.success(result.message);
+      return;
+    }
+
+    toast.error(result.message);
   };
 
   const handleClearAllSavedAgents = () => {
-    if (confirm("Are you sure you want to clear all saved agents?")) {
-      clearAllSavedAgents();
+    if (savedAgents.length === 0) {
+      toast.info("There are no saved agents to clear.");
+      return;
     }
+
+    clearAllSavedAgents();
+    toast.success("Saved agents cleared.");
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        padding: "1rem",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <header style={{ marginBottom: "2rem" }}>
-        <h1>AI Agent Builder</h1>
-        <p>Design your custom AI personality and capability set.</p>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-          <button onClick={() => void fetchAgentData()} disabled={loading}>
+    <div className="container mx-auto flex min-h-screen flex-col gap-8 py-8">
+      <header className="space-y-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">AI Agent Builder</h1>
+          <p className="text-muted-foreground">
+            Design your custom AI personality and capability set.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button onClick={() => void fetchAgentData()} disabled={loading}>
             {loading
               ? "Fetching Configuration..."
               : "Reload Configuration Data"}
-          </button>
+          </Button>
           <SessionStatus />
         </div>
       </header>
 
-      <main
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "2rem",
-          flex: 1,
-        }}
-      >
-        <div style={{ display: "flex", gap: "2rem", flexDirection: "row" }}>
+      <main className="flex flex-1 flex-col gap-6">
+        <div className="grid gap-6 lg:grid-cols-2">
           <ConfigurationOptions
             data={data}
             loading={loading}
             error={error}
+            validationErrors={validationErrors}
             selectedProfile={selectedProfile}
             selectedProvider={selectedProvider}
             onProfileChange={setSelectedProfile}
@@ -124,6 +127,7 @@ export function AgentBuilderPage() {
           />
           <CurrentAgentConfiguration
             data={data}
+            validationErrors={validationErrors}
             selectedProfile={selectedProfile}
             selectedSkills={selectedSkills}
             selectedLayers={selectedLayers}
