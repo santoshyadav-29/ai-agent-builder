@@ -72,3 +72,10 @@
 - Added explicit remove handlers in App and passed them down as props.
 - Why: isolates preview/rendering concerns from state-management logic.
 - Files: src/App.tsx, src/components/CurrentAgentConfiguration.tsx
+
+### 12) Extracted saved agents list and actions panel
+
+- Moved saved-agents rendering and actions into `src/components/SavedAgentsPanel.tsx`.
+- Added a dedicated clear-all handler in App and passed load/delete/clear actions as component props.
+- Why: separates persisted-list presentation from container-level state management.
+- Files: src/App.tsx, src/components/SavedAgentsPanel.tsx
