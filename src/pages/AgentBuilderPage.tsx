@@ -93,18 +93,18 @@ export function AgentBuilderPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-      <header className="space-y-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-12 lg:px-8">
+      <header className="space-y-4 pb-6 border-b border-border">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground">
             AI Agent Builder
           </h1>
-          <p className="text-muted-foreground">
-            Design your custom AI personality and capability set.
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Design your custom AI personality and capability set. Build your best team with precision.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={() => void fetchAgentData()} disabled={loading}>
+        <div className="flex flex-wrap items-center gap-4 pt-2">
+          <Button variant="outline" onClick={() => void fetchAgentData()} disabled={loading} size="lg" className="font-semibold shadow-sm">
             {loading
               ? "Fetching Configuration..."
               : "Reload Configuration Data"}
@@ -113,9 +113,9 @@ export function AgentBuilderPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col gap-6">
+      <main className="flex flex-1 flex-col gap-12">
         <section
-          className="grid gap-6 lg:grid-cols-2"
+          className="grid gap-10 lg:grid-cols-2 lg:items-start"
           aria-label="Agent configuration workspace"
         >
           <ConfigurationOptions

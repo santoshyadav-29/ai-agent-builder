@@ -81,7 +81,8 @@ const isPersistedSavedAgent = (
     candidate.skillIds.every((id) => typeof id === "string") &&
     Array.isArray(candidate.layerIds) &&
     candidate.layerIds.every((id) => typeof id === "string") &&
-    (candidate.provider === undefined || typeof candidate.provider === "string") &&
+    (candidate.provider === undefined ||
+      typeof candidate.provider === "string") &&
     (candidate.id === undefined || typeof candidate.id === "string")
   );
 };
@@ -170,7 +171,9 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
             console.error("Error fetching data:", err);
             set({
               error:
-                err instanceof Error ? err.message : "Failed to fetch agent data",
+                err instanceof Error
+                  ? err.message
+                  : "Failed to fetch agent data",
               loading: false,
             });
           }
@@ -194,10 +197,10 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
 
             if (state.selectedSkills.includes(skillId)) {
               return {
-                validationErrors: clearValidationFields(state.validationErrors, [
-                  "skillIds",
-                  "form",
-                ]),
+                validationErrors: clearValidationFields(
+                  state.validationErrors,
+                  ["skillIds", "form"],
+                ),
               };
             }
 
@@ -225,10 +228,10 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
 
             if (state.selectedLayers.includes(layerId)) {
               return {
-                validationErrors: clearValidationFields(state.validationErrors, [
-                  "layerIds",
-                  "form",
-                ]),
+                validationErrors: clearValidationFields(
+                  state.validationErrors,
+                  ["layerIds", "form"],
+                ),
               };
             }
 
@@ -326,9 +329,12 @@ export const useAgentBuilderStore = create<AgentBuilderState>()(
             };
           }
 
-          const draftFingerprint = buildConfigurationFingerprint(validationResult.data);
+          const draftFingerprint = buildConfigurationFingerprint(
+            validationResult.data,
+          );
           const hasDuplicateConfiguration = savedAgents.some(
-            (agent) => buildConfigurationFingerprint(agent) === draftFingerprint,
+            (agent) =>
+              buildConfigurationFingerprint(agent) === draftFingerprint,
           );
 
           if (hasDuplicateConfiguration) {

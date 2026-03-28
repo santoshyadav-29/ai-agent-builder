@@ -21,19 +21,25 @@ export function SavedAgentsPanel({
   }
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold tracking-tight">Saved Agents</h2>
-        <Button onClick={onClearAll} variant="outline" size="sm">
+    <section className="mt-8 rounded-2xl bg-gray-50 p-8 border border-gray-200 space-y-6">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Saved Agents</h2>
+          <p className="text-sm text-gray-600">Review and manage your previously hired teams.</p>
+        </div>
+        <Button onClick={onClearAll} variant="outline" size="sm" className="font-semibold shadow-sm">
           Clear All
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {savedAgents.map((agent) => (
-          <Card key={agent.id}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{agent.name}</CardTitle>
+          <Card key={agent.id} className="shadow-sm border-gray-200 bg-white">
+            <CardHeader className="pb-3 border-b border-gray-100 mb-3">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg font-bold text-gray-900">{agent.name}</CardTitle>
+                <Badge variant="success" className="text-[10px] px-1.5 py-0">Deployed</Badge>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex items-center justify-between">

@@ -3,40 +3,53 @@
 @tailwind utilities;
 
 @layer base {
-	:root {
-		--background: 210 20% 98%;
-		--foreground: 222.2 47.4% 11.2%;
+    :root {
+        /* Pure White (Main Background) */
+        --background: 0 0% 100%;
+        /* Deep Charcoal (Primary Text) */
+        --foreground: 221 39% 11%;
 
-		--card: 0 0% 100%;
-		--card-foreground: 222.2 47.4% 11.2%;
+        /* Pure White Cards */
+        --card: 0 0% 100%;
+        --card-foreground: 221 39% 11%;
 
-		--primary: 208 92% 31%;
-		--primary-foreground: 210 40% 98%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 221 39% 11%;
 
-		--secondary: 199 95% 93%;
-		--secondary-foreground: 222.2 47.4% 11.2%;
+        /* Electric Indigo (Action Color) #4F46E5 */
+        --primary: 243.4 75.4% 58.6%;
+        --primary-foreground: 0 0% 100%;
 
-		--muted: 210 40% 96.1%;
-		--muted-foreground: 215.4 16.3% 46.9%;
+        /* Soft Cloud (Section Divider) #F9FAFB */
+        --secondary: 210 40% 98%;
+        /* Slate Gray (Secondary Text) #4B5563 */
+        --secondary-foreground: 215.4 16.3% 46.9%;
 
-		--accent: 188 78% 41%;
-		--accent-foreground: 210 40% 98%;
+        --muted: 210 40% 98%;
+        --muted-foreground: 215.4 16.3% 46.9%;
 
-		--destructive: 0 84.2% 60.2%;
-		--destructive-foreground: 210 40% 98%;
+        --accent: 210 40% 98%;
+        --accent-foreground: 221 39% 11%;
 
-		--border: 214.3 31.8% 91.4%;
-		--input: 214.3 31.8% 91.4%;
-		--ring: 208 92% 31%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 100%;
 
-		--radius: 0.75rem;
-	}
+        /* Cool Border #E5E7EB */
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 243.4 75.4% 58.6%;
 
-	* {
-		@apply border-border;
-	}
+        /* Success Green #10B981 available implicitly via Tailwind, mapped roughly here */
+        --chart-1: 160 84% 39%;
+        
+        --radius: 0.5rem;
+    }
 
-	body {
-		@apply min-h-screen bg-background text-foreground antialiased;
-	}
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply min-h-screen bg-background text-foreground antialiased;
+    }
 }
