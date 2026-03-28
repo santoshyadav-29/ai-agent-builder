@@ -26,3 +26,9 @@
 - Updated fetch error handling to use `unknown` with safe Error narrowing.
 - Why: removes unsafe typing and restores lint compliance.
 - File: src/App.tsx
+
+### 6) Replaced index-based keys with stable saved-agent IDs
+- Added persistent IDs for saved agents and used those IDs for list keys and deletion.
+- Included a localStorage normalization step so older saved items without IDs are upgraded automatically.
+- Why: index keys are unstable during list updates and can cause UI/state mismatches.
+- File: src/App.tsx
