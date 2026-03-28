@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Cpu, Layers3, Sparkles, UserRound } from "lucide-react";
 import { AI_PROVIDERS } from "../constants/providers";
 import type { AgentData, AgentValidationErrors } from "../types/agent";
 import {
@@ -49,19 +50,27 @@ export function ConfigurationOptions({
     <section className="flex-1">
       <Card className="h-full border-gray-200 shadow-sm">
         <CardHeader className="border-b border-gray-100 mb-4 pb-4">
-          <CardTitle className="text-xl font-bold text-gray-900">Configuration Options</CardTitle>
+          <CardTitle className="text-xl font-bold text-gray-900">
+            Configuration Options
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {error && (
             <Alert variant="destructive" className="bg-red-50 border-red-200">
-              <AlertTitle className="text-red-800 font-bold">Configuration Error</AlertTitle>
-              <AlertDescription className="text-red-700">{error}</AlertDescription>
+              <AlertTitle className="text-red-800 font-bold">
+                Configuration Error
+              </AlertTitle>
+              <AlertDescription className="text-red-700">
+                {error}
+              </AlertDescription>
             </Alert>
           )}
 
           {loading && (
             <Alert className="bg-indigo-50 border-indigo-200">
-              <AlertTitle className="text-indigo-800 font-bold">Loading</AlertTitle>
+              <AlertTitle className="text-indigo-800 font-bold">
+                Loading
+              </AlertTitle>
               <AlertDescription className="text-indigo-700">
                 Fetching configuration data from the API.
               </AlertDescription>
@@ -70,7 +79,9 @@ export function ConfigurationOptions({
 
           {!data && !loading && !error && (
             <Alert className="bg-gray-50 border-gray-200">
-              <AlertTitle className="text-gray-800 font-bold">No Configuration Loaded</AlertTitle>
+              <AlertTitle className="text-gray-800 font-bold">
+                No Configuration Loaded
+              </AlertTitle>
               <AlertDescription className="text-gray-600">
                 Reload configuration data to start building an agent.
               </AlertDescription>
@@ -80,7 +91,13 @@ export function ConfigurationOptions({
           {data && (
             <div className="space-y-6">
               <div className="space-y-3">
-                <Label htmlFor="profile-select" className="text-sm font-bold text-gray-900">Base Profile</Label>
+                <Label
+                  htmlFor="profile-select"
+                  className="flex items-center gap-2 text-sm font-bold text-gray-900"
+                >
+                  <UserRound className="h-4 w-4 text-indigo-600" />
+                  Base Profile
+                </Label>
                 <div className="relative">
                   <Select
                     value={selectedProfile || undefined}
@@ -110,7 +127,13 @@ export function ConfigurationOptions({
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="skill-select" className="text-sm font-bold text-gray-900">Add Skill</Label>
+                <Label
+                  htmlFor="skill-select"
+                  className="flex items-center gap-2 text-sm font-bold text-gray-900"
+                >
+                  <Sparkles className="h-4 w-4 text-indigo-600" />
+                  Add Skill
+                </Label>
                 <Select
                   value={skillSelectValue || undefined}
                   onValueChange={(value) => {
@@ -128,7 +151,10 @@ export function ConfigurationOptions({
                   <SelectContent className="border-gray-200 shadow-md rounded-lg">
                     {data.skills.map((skill) => (
                       <SelectItem key={skill.id} value={skill.id}>
-                        {skill.name} <span className="text-gray-400">({skill.category})</span>
+                        {skill.name}{" "}
+                        <span className="text-gray-400">
+                          ({skill.category})
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -141,7 +167,13 @@ export function ConfigurationOptions({
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="layer-select" className="text-sm font-bold text-gray-900">Add Personality Layer</Label>
+                <Label
+                  htmlFor="layer-select"
+                  className="flex items-center gap-2 text-sm font-bold text-gray-900"
+                >
+                  <Layers3 className="h-4 w-4 text-indigo-600" />
+                  Add Personality Layer
+                </Label>
                 <Select
                   value={layerSelectValue || undefined}
                   onValueChange={(value) => {
@@ -159,7 +191,8 @@ export function ConfigurationOptions({
                   <SelectContent className="border-gray-200 shadow-md rounded-lg">
                     {data.layers.map((layer) => (
                       <SelectItem key={layer.id} value={layer.id}>
-                        {layer.name} <span className="text-gray-400">({layer.type})</span>
+                        {layer.name}{" "}
+                        <span className="text-gray-400">({layer.type})</span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -172,7 +205,13 @@ export function ConfigurationOptions({
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="provider-select" className="text-sm font-bold text-gray-900">AI Provider</Label>
+                <Label
+                  htmlFor="provider-select"
+                  className="flex items-center gap-2 text-sm font-bold text-gray-900"
+                >
+                  <Cpu className="h-4 w-4 text-indigo-600" />
+                  AI Provider
+                </Label>
                 <Select
                   value={selectedProvider || undefined}
                   onValueChange={onProviderChange}

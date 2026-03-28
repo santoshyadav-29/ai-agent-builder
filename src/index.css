@@ -41,7 +41,7 @@
 
         /* Success Green #10B981 available implicitly via Tailwind, mapped roughly here */
         --chart-1: 160 84% 39%;
-        
+
         --radius: 0.5rem;
     }
 
@@ -51,5 +51,20 @@
 
     body {
         @apply min-h-screen bg-background text-foreground antialiased;
+    }
+
+    html {
+        overflow-y: scroll;
+        scrollbar-gutter: stable both-edges;
+    }
+
+    html body[data-scroll-locked],
+    html body.with-scroll-bars-hidden {
+        overflow: auto !important;
+        overscroll-behavior: auto !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+        padding-top: 0 !important;
     }
 }
