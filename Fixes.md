@@ -21,3 +21,8 @@
 - Updated the analytics heartbeat effect to depend on the current agent name.
 - Why: without the dependency, the interval kept reading stale initial state.
 - File: src/App.tsx
+
+### 5) Replaced explicit any in fetch error handling
+- Updated fetch error handling to use `unknown` with safe Error narrowing.
+- Why: removes unsafe typing and restores lint compliance.
+- File: src/App.tsx

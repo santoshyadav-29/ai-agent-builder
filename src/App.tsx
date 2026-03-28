@@ -108,12 +108,12 @@ function App() {
         return
       }
       setData(jsonData)
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (requestId !== latestRequestIdRef.current) {
         return
       }
       console.error('Error fetching data:', err)
-      setError(err.message || 'Failed to fetch agent data')
+      setError(err instanceof Error ? err.message : 'Failed to fetch agent data')
     } finally {
       if (requestId === latestRequestIdRef.current) {
         setLoading(false)
