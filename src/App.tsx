@@ -119,8 +119,7 @@ function App() {
   const handleLayerSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const layerId = e.target.value;
     if (layerId && !selectedLayers.includes(layerId)) {
-      selectedLayers.push(layerId)
-      setSelectedLayers(selectedLayers)
+      setSelectedLayers([...selectedLayers, layerId])
     }
     e.target.value = ""; // Reset dropdown
 
