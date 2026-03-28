@@ -11,3 +11,8 @@
 - Stopped triggering configuration fetches when selecting profile, skill, or layer.
 - Why: these are local UI state updates and should not cause network requests, loading delays, or flicker.
 - File: src/App.tsx
+
+### 3) Prevented stale overlapping fetch responses from overwriting state
+- Added request-id based staleness checks in the configuration fetch flow.
+- Why: when multiple fetches overlap, older responses should not win and overwrite newer state.
+- File: src/App.tsx

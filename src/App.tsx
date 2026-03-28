@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Define the types based on data.json
 interface AgentProfile {
@@ -57,6 +57,7 @@ function App() {
   }
 
   const [sessionTime, setSessionTime] = useState(0)
+  const latestRequestIdRef = useRef(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -90,6 +91,7 @@ function App() {
   }, [])
 
   const fetchAPI = async () => {
+    const requestId = ++latestRequestIdRef.current
     setLoading(true)
     setError(null)
     try {
@@ -102,12 +104,20 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const jsonData: AgentData = await response.json()
+      if (requestId !== latestRequestIdRef.current) {
+        return
+      }
       setData(jsonData)
     } catch (err: any) {
+      if (requestId !== latestRequestIdRef.current) {
+        return
+      }
       console.error('Error fetching data:', err)
       setError(err.message || 'Failed to fetch agent data')
     } finally {
-      setLoading(false)
+      if (requestId === latestRequestIdRef.current) {
+        setLoading(false)
+      }
     }
   }
 
