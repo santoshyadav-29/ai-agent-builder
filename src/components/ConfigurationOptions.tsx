@@ -178,7 +178,7 @@ export function ConfigurationOptions({
                         <SelectTrigger
                           id="profile-select"
                           aria-invalid={!!validationErrors.profileId}
-                          className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors focus-visible:bg-white"
+                          className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors"
                         >
                           <SelectValue placeholder="Select a profile" />
                         </SelectTrigger>
@@ -216,7 +216,7 @@ export function ConfigurationOptions({
                       <SelectTrigger
                         id="skill-select"
                         aria-invalid={!!validationErrors.skillIds}
-                        className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors focus-visible:bg-white [&>span]:truncate"
+                        className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors [&>span]:truncate"
                       >
                         <SelectValue placeholder={selectedSkillsSummary} />
                       </SelectTrigger>
@@ -265,7 +265,7 @@ export function ConfigurationOptions({
                       <SelectTrigger
                         id="layer-select"
                         aria-invalid={!!validationErrors.layerIds}
-                        className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors focus-visible:bg-white [&>span]:truncate"
+                        className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors [&>span]:truncate"
                       >
                         <SelectValue placeholder={selectedLayersSummary} />
                       </SelectTrigger>
@@ -311,7 +311,7 @@ export function ConfigurationOptions({
                       <SelectTrigger
                         id="provider-select"
                         aria-invalid={!!validationErrors.provider}
-                        className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors focus-visible:bg-white"
+                        className="bg-gray-50 border-gray-200 shadow-sm rounded-lg transition-colors"
                       >
                         <SelectValue placeholder="Select an AI provider" />
                       </SelectTrigger>
