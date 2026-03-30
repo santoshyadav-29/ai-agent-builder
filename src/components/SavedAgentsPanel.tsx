@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   Bot,
   Cpu,
@@ -28,8 +28,48 @@ export function SavedAgentsPanel({
   onDeleteAgent,
   onClearAll,
 }: SavedAgentsPanelProps) {
+  const MODAL_CLOSE_DURATION_MS = 220;
   const [selectedAgentForLoad, setSelectedAgentForLoad] =
     useState<SavedAgent | null>(null);
+  const [isModalClosing, setIsModalClosing] = useState(false);
+  const closeTimeoutRef = useRef<number | null>(null);
+
+  const clearCloseTimeout = () => {
+    if (closeTimeoutRef.current !== null) {
+      window.clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearCloseTimeout();
+    };
+  }, []);
+
+  const openLoadModal = (agent: SavedAgent) => {
+    clearCloseTimeout();
+    setIsModalClosing(false);
+    setSelectedAgentForLoad(agent);
+  };
+
+  const closeLoadModal = () => {
+    if (!selectedAgentForLoad || isModalClosing) {
+      return;
+    }
+
+    setIsModalClosing(true);
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const delay = prefersReducedMotion ? 0 : MODAL_CLOSE_DURATION_MS;
+
+    closeTimeoutRef.current = window.setTimeout(() => {
+      setSelectedAgentForLoad(null);
+      setIsModalClosing(false);
+      closeTimeoutRef.current = null;
+    }, delay);
+  };
 
   const handleConfirmLoad = () => {
     if (!selectedAgentForLoad) {
@@ -37,7 +77,7 @@ export function SavedAgentsPanel({
     }
 
     onLoadAgent(selectedAgentForLoad);
-    setSelectedAgentForLoad(null);
+    closeLoadModal();
   };
 
   const getProfileName = (profileId: string) =>
@@ -61,7 +101,7 @@ export function SavedAgentsPanel({
   }
 
   return (
-    <section className="mt-8 rounded-2xl bg-gray-50 p-8 border border-gray-200 space-y-6">
+    <section className="mt-8 rounded-2xl bg-gray-50 p-8 border border-gray-200 space-y-6 motion-safe:animate-fade-up [animation-delay:220ms]">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div className="space-y-1">
           <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-900">
@@ -83,8 +123,12 @@ export function SavedAgentsPanel({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {savedAgents.map((agent) => (
-          <Card key={agent.id} className="shadow-sm border-gray-200 bg-white">
+        {savedAgents.map((agent, index) => (
+          <Card
+            key={agent.id}
+            className="shadow-sm border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg motion-safe:animate-fade-up"
+            style={{ animationDelay: `${index * 70}ms` } as CSSProperties}
+          >
             <CardHeader className="pb-3 border-b border-gray-100 mb-3">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg font-bold text-gray-900">
@@ -134,8 +178,8 @@ export function SavedAgentsPanel({
 
               <div className="flex gap-2 pt-1">
                 <Button
-                  onClick={() => setSelectedAgentForLoad(agent)}
-                  className="flex-1"
+                  onClick={() => openLoadModal(agent)}
+                  className="flex-1 transition-all duration-300 hover:-translate-y-0.5"
                   variant="secondary"
                 >
                   <Upload className="mr-2 h-4 w-4" />
@@ -144,6 +188,7 @@ export function SavedAgentsPanel({
                 <Button
                   onClick={() => onDeleteAgent(agent.id)}
                   variant="outline"
+                  className="transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete
@@ -156,14 +201,22 @@ export function SavedAgentsPanel({
 
       {selectedAgentForLoad && (
         <div
-          className="fixed inset-0 z-[1200] flex items-center justify-center bg-gray-900/45 p-4"
+          className={`fixed inset-0 z-[1200] flex items-center justify-center bg-transparent backdrop-blur-sm p-4 ${
+            isModalClosing
+              ? "motion-safe:animate-modal-overlay-out"
+              : "motion-safe:animate-modal-overlay-in"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-label="Saved agent details"
-          onClick={() => setSelectedAgentForLoad(null)}
+          onClick={closeLoadModal}
         >
           <div
-            className="w-full max-w-2xl rounded-xl border border-gray-200 bg-white shadow-2xl"
+            className={`w-full max-w-2xl rounded-xl border border-gray-200 bg-white shadow-2xl ${
+              isModalClosing
+                ? "motion-safe:animate-modal-panel-out"
+                : "motion-safe:animate-modal-panel-in"
+            }`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between border-b border-gray-100 px-6 py-4">
@@ -180,7 +233,7 @@ export function SavedAgentsPanel({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-gray-500 hover:text-gray-800"
-                onClick={() => setSelectedAgentForLoad(null)}
+                onClick={closeLoadModal}
                 aria-label="Close details dialog"
               >
                 <X className="h-4 w-4" />
@@ -257,10 +310,7 @@ export function SavedAgentsPanel({
             </div>
 
             <div className="flex justify-end gap-3 border-t border-gray-100 px-6 py-4">
-              <Button
-                variant="outline"
-                onClick={() => setSelectedAgentForLoad(null)}
-              >
+              <Button variant="outline" onClick={closeLoadModal}>
                 Cancel
               </Button>
               <Button

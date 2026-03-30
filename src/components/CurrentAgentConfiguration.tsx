@@ -1,43 +1,35 @@
-import type { AgentData, AgentValidationErrors } from "../types/agent";
-import { BadgeCheck, Cpu, Layers3, Sparkles, UserRound, X } from "lucide-react";
+import type { AgentData } from "../types/agent";
+import { Cpu, Layers3, Sparkles, UserRound, X } from "lucide-react";
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Input,
-  Label,
   Separator,
+  Skeleton,
 } from "./ui";
 
 interface CurrentAgentConfigurationProps {
   data: AgentData | null;
-  validationErrors: AgentValidationErrors;
+  loading: boolean;
   selectedProfile: string;
   selectedSkills: string[];
   selectedLayers: string[];
   selectedProvider: string;
-  agentName: string;
   onRemoveSkill: (skillId: string) => void;
   onRemoveLayer: (layerId: string) => void;
-  onAgentNameChange: (name: string) => void;
-  onSaveAgent: () => void;
 }
 
 export function CurrentAgentConfiguration({
   data,
-  validationErrors,
+  loading,
   selectedProfile,
   selectedSkills,
   selectedLayers,
   selectedProvider,
-  agentName,
   onRemoveSkill,
   onRemoveLayer,
-  onAgentNameChange,
-  onSaveAgent,
 }: CurrentAgentConfigurationProps) {
   const chipBaseClass =
     "inline-flex h-9 items-center gap-2 rounded-full border px-3 text-sm shadow-sm";
@@ -46,9 +38,48 @@ export function CurrentAgentConfiguration({
     (profile) => profile.id === selectedProfile,
   );
 
+  if (loading && !data) {
+    return (
+      <section className="flex-1">
+        <Card className="h-full border-gray-200 shadow-sm flex flex-col transition-all duration-300 hover:border-indigo-200 hover:shadow-md motion-safe:animate-fade-up [animation-delay:120ms]">
+          <CardHeader className="border-b border-gray-100 mb-4 pb-4">
+            <CardTitle className="text-xl font-bold text-gray-900">
+              Current Agent Preview
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 flex-1 flex flex-col animate-soft-in">
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-24 w-full rounded-lg" />
+            </div>
+
+            <Separator className="bg-gray-100" />
+
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-28" />
+              <div className="flex flex-wrap gap-3">
+                <Skeleton className="h-9 w-28 rounded-full" />
+                <Skeleton className="h-9 w-24 rounded-full" />
+                <Skeleton className="h-9 w-32 rounded-full" />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-36" />
+              <div className="flex flex-wrap gap-3">
+                <Skeleton className="h-9 w-32 rounded-full" />
+                <Skeleton className="h-9 w-28 rounded-full" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
+
   return (
     <section className="flex-1">
-      <Card className="h-full border-gray-200 shadow-sm flex flex-col">
+      <Card className="h-full border-gray-200 shadow-sm flex flex-col transition-all duration-300 hover:border-indigo-200 hover:shadow-md motion-safe:animate-fade-up [animation-delay:120ms]">
         <CardHeader className="border-b border-gray-100 mb-4 pb-4">
           <CardTitle className="text-xl font-bold text-gray-900">
             Current Agent Preview
@@ -61,7 +92,7 @@ export function CurrentAgentConfiguration({
               Profile
             </h3>
             {selectedProfileData ? (
-              <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-indigo-200 hover:shadow-md">
+              <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:border-indigo-200 hover:shadow-md">
                 <p className="font-bold text-gray-900 text-base">
                   {selectedProfileData.name}
                 </p>
@@ -92,7 +123,7 @@ export function CurrentAgentConfiguration({
                   return (
                     <li
                       key={skillId}
-                      className={`${chipBaseClass} border-gray-200 bg-white`}
+                      className={`${chipBaseClass} border-gray-200 bg-white transition-all duration-300 hover:border-indigo-200 hover:shadow`}
                     >
                       <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
                       <span className="font-semibold text-gray-900">
@@ -129,7 +160,7 @@ export function CurrentAgentConfiguration({
                   return (
                     <li
                       key={layerId}
-                      className={`${chipBaseClass} border-indigo-100 bg-indigo-50`}
+                      className={`${chipBaseClass} border-indigo-100 bg-indigo-50 transition-all duration-300 hover:-translate-y-0.5`}
                     >
                       <Layers3 className="h-3.5 w-3.5 text-indigo-500" />
                       <span className="font-semibold text-indigo-700">
@@ -168,48 +199,6 @@ export function CurrentAgentConfiguration({
                 </p>
               )}
             </div>
-          </div>
-
-          <div className="space-y-4 bg-gray-50 -mx-6 -mb-6 p-6 rounded-b-xl border-t border-gray-200 mt-auto">
-            <div className="mb-2">
-              <Label
-                htmlFor="agent-name-input"
-                className="text-gray-900 font-bold text-base block mb-1 flex items-center gap-2"
-              >
-                <BadgeCheck className="h-4 w-4 text-indigo-600" />
-                Make It Official
-              </Label>
-              <p className="text-sm text-gray-600">
-                Give your new AI team member a name and deploy them immediately.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Input
-                id="agent-name-input"
-                type="text"
-                placeholder="e.g., Support Specialist, Data Analyst..."
-                value={agentName}
-                onChange={(e) => onAgentNameChange(e.target.value)}
-                className="flex-1 bg-white border-gray-300 focus-visible:ring-indigo-600 shadow-sm"
-                aria-invalid={!!validationErrors.name}
-              />
-              <Button
-                onClick={onSaveAgent}
-                className="sm:w-auto font-bold shadow-md bg-indigo-600 hover:bg-indigo-700 text-white transition-all px-8"
-              >
-                Hire The Best Team
-              </Button>
-            </div>
-            {validationErrors.name && (
-              <p className="text-xs font-semibold text-red-600">
-                {validationErrors.name}
-              </p>
-            )}
-            {validationErrors.form && (
-              <p className="text-xs font-semibold text-red-600">
-                {validationErrors.form}
-              </p>
-            )}
           </div>
         </CardContent>
       </Card>

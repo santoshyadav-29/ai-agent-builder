@@ -68,3 +68,142 @@
         padding-top: 0 !important;
     }
 }
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes soft-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes shimmer {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(120%);
+    }
+}
+
+@keyframes modal-overlay-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modal-overlay-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes modal-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes modal-panel-out {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(10px) scale(0.985);
+    }
+}
+
+@layer components {
+    .animate-fade-up {
+        animation: fade-up 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-soft-in {
+        animation: soft-in 420ms ease-out both;
+    }
+
+    .animate-modal-overlay-in {
+        animation: modal-overlay-in 220ms ease-out both;
+    }
+
+    .animate-modal-overlay-out {
+        animation: modal-overlay-out 220ms ease-in both;
+    }
+
+    .animate-modal-panel-in {
+        animation: modal-panel-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-modal-panel-out {
+        animation: modal-panel-out 220ms cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    .skeleton-shimmer {
+        position: relative;
+        overflow: hidden;
+        background: hsl(var(--muted));
+    }
+
+    .skeleton-shimmer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(100deg,
+                transparent 15%,
+                hsl(var(--background) / 0.65) 50%,
+                transparent 85%);
+        animation: shimmer 1.55s linear infinite;
+    }
+
+    .app-shell-glow {
+        background-image:
+            radial-gradient(circle at 8% -8%, hsl(var(--primary) / 0.12), transparent 34%),
+            radial-gradient(circle at 94% 2%, hsl(var(--chart-1) / 0.08), transparent 30%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .animate-fade-up,
+    .animate-soft-in,
+    .animate-modal-overlay-in,
+    .animate-modal-overlay-out,
+    .animate-modal-panel-in,
+    .animate-modal-panel-out,
+    .skeleton-shimmer::after {
+        animation: none !important;
+    }
+}

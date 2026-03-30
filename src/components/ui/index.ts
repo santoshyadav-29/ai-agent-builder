@@ -22,3 +22,4 @@ export {
   SelectSeparator,
 } from "./select";
 export { Alert, AlertTitle, AlertDescription } from "./alert";
+export { Skeleton } from "./skeleton";
