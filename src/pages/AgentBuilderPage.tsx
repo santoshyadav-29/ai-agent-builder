@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { LoaderCircle } from "lucide-react";
+import { ArrowUpRight, FileText, LoaderCircle } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
 import {
@@ -16,6 +16,8 @@ import type { SavedAgent } from "../types/agent";
 import { Button } from "../components/ui";
 
 export function AgentBuilderPage() {
+  const cvFileHref = "/Santosh%20Yadav%20-%20CV.pdf";
+
   const {
     selectedProfile,
     selectedSkills,
@@ -137,6 +139,36 @@ export function AgentBuilderPage() {
               )}
             </Button>
             <SessionStatus />
+          </div>
+
+          <div className="relative overflow-hidden rounded-xl border border-indigo-100 bg-linear-to-r from-indigo-50 via-white to-cyan-50 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-indigo-200/40 blur-2xl" />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600/80">
+                  Featured Resume
+                </p>
+                <p className="text-sm font-semibold text-gray-900 sm:text-base">
+                  Explore my experience and project highlights.
+                </p>
+              </div>
+              <Button
+                asChild
+                size="lg"
+                className="w-full sm:w-auto bg-indigo-600 text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700"
+              >
+                <a
+                  href={cvFileHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Open CV in a new tab"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  View CV
+                  <ArrowUpRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            </div>
           </div>
         </header>
 
