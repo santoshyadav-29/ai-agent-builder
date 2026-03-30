@@ -50,18 +50,14 @@ describe("ConfigurationOptions", () => {
       />,
     );
 
-    expect(screen.getByText("Manage Calendar, Database Query +1")).toBeInTheDocument();
+    expect(
+      screen.getByText("Manage Calendar, Database Query +1"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Pirate Persona, Reflexion")).toBeInTheDocument();
   });
 
   it("shows loading skeleton when loading without data", () => {
-    render(
-      <ConfigurationOptions
-        {...baseProps}
-        data={null}
-        loading
-      />,
-    );
+    render(<ConfigurationOptions {...baseProps} data={null} loading />);
 
     expect(screen.getByText("Configuration Options")).toBeInTheDocument();
     expect(screen.queryByText("Base Profile")).not.toBeInTheDocument();

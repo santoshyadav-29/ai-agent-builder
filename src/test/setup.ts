@@ -36,6 +36,9 @@ if (typeof window !== "undefined" && !("ResizeObserver" in window)) {
   });
 }
 
-if (typeof HTMLElement !== "undefined" && !HTMLElement.prototype.scrollIntoView) {
+if (
+  typeof HTMLElement !== "undefined" &&
+  !HTMLElement.prototype.scrollIntoView
+) {
   HTMLElement.prototype.scrollIntoView = () => {};
 }

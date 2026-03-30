@@ -156,7 +156,9 @@ describe("useAgentBuilderStore", () => {
   it("fetchAgentData loads data and clears loading state", async () => {
     const mockData = {
       agentProfiles: [{ id: "p1", name: "Creative", description: "desc" }],
-      skills: [{ id: "s1", name: "Writing", category: "Core", description: "desc" }],
+      skills: [
+        { id: "s1", name: "Writing", category: "Core", description: "desc" },
+      ],
       layers: [{ id: "l1", name: "Tone", type: "Style", description: "desc" }],
     };
 
